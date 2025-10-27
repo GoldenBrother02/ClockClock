@@ -1,0 +1,140 @@
+@page "/"
+
+<div class="app">
+    @foreach (var (digit, index) in TimeDigits.Select((d, i) => (d, i)))
+    {
+        <div>
+            @foreach (var (seg, j) in Digits[digit].Select((s, j) => (s, j)))
+            {
+                <Clock HourAngle="@seg.h" MinuteAngle="@seg.m" Initial="@Initial" />
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private bool Initial = true;
+    private List<int> TimeDigits = Enumerable.Repeat(0, 6).ToList();
+    private System.Timers.Timer? timer;
+
+    private readonly (int h, int m) H = (0, 180);
+    private readonly (int h, int m) V = (270, 90);
+    private readonly (int h, int m) TL = (180, 270);
+    private readonly (int h, int m) TR = (0, 270);
+    private readonly (int h, int m) BL = (180, 90);
+    private readonly (int h, int m) BR = (0, 90);
+    private readonly (int h, int m) E = (135, 135);
+
+    private (int h, int m)[][] Digits = Array.Empty<(int h, int m)[]>();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Digits = new[] {
+// 0
+new[] {
+BR, H, H, BL,
+V, BR, BL, V,
+V, V, V, V,
+V, V, V, V,
+V, TR, TL, V,
+TR, H, H, TL },
+
+// 1
+new[] {
+BR, H, BL, E,
+TR, BL, V, E,
+E, V, V, E,
+E, V, V, E,
+BR, TL, TR, BL,
+TR, H, H, TL },
+
+// 2
+new[] {
+BR, H, H, BL,
+TR, H, BL, V,
+BR, H, TL, V,
+V, BR, H, TL,
+V, TR, H, BL,
+TR, H, H, TL },
+
+// 3
+new[] {
+BR, H, H, BL,
+TR, H, BL, V,
+E, BR, TL, V,
+E, TR, BL, V,
+BR, H, TL, V,
+TR, H, H, TL },
+
+// 4
+new[] {
+BR, BL, BR, BL,
+V, V, V, V,
+V, TR, TL, V,
+TR, H, BL, V,
+E, E, V, V,
+E, E, TR, TL },
+
+// 5
+new[] {
+BR, H, H, BL,
+V, BR, H, TL,
+V, TR, H, BL,
+TR, H, BL, V,
+BR, H, TL, V,
+TR, H, H, TL },
+
+// 6
+new[] {
+BR, H, H, BL,
+V, BR, H, TL,
+V, TR, H, BL,
+V, BR, BL, V,
+V, TR, TL, V,
+TR, H, H, TL },
+
+// 7
+new[] {
+BR, H, H, BL,
+TR, H, BL, V,
+E, E, V, V,
+E, E, V, V,
+E, E, V, V,
+E, E, TR, TL },
+
+// 8
+new[] {
+BR, H, H, BL,
+V, BR, BL, V,
+V, TR, TL, V,
+V, BR, BL, V,
+V, TR, TL, V,
+TR, H, H, TL },
+
+// 9
+new[] {
+BR, H, H, BL,
+V, BR, BL, V,
+V, TR, TL, V,
+TR, H, BL, V,
+BR, H, TL, V,
+TR, H, H, TL},
+
+};
+        await Task.Delay(600);
+        Initial = false;
+        UpdateTime();
+
+        timer = new System.Timers.Timer(1000);
+        timer.Elapsed += (_, _) => InvokeAsync(UpdateTime);
+        timer.Start();
+    }
+
+    private void UpdateTime()
+    {
+        var now = DateTime.Now;
+        TimeDigits = now.ToString("HHmmss").Select(c => c - '0').ToList();
+        StateHasChanged();
+    }
+}

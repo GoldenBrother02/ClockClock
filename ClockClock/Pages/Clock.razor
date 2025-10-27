@@ -1,0 +1,35 @@
+@using Microsoft.AspNetCore.Components
+@implements IDisposable
+
+<div class="clock" style="
+        --hour-angle:@HourAngle;
+        --minute-angle:@MinuteAngle;
+        --dur:@Duration;
+     ">
+</div>
+
+@code {
+    [Parameter] public double HourAngle { get; set; }
+    [Parameter] public double MinuteAngle { get; set; }
+    [Parameter] public bool Initial { get; set; }
+
+    private double prevHour = 0;
+    private double prevMinute = 0;
+    private string Duration => Initial ? "1" : "0.4";
+
+    protected override void OnParametersSet()
+    {
+        HourAngle = NormalizeAngle(HourAngle, prevHour);
+        MinuteAngle = NormalizeAngle(MinuteAngle, prevMinute);
+        prevHour = HourAngle;
+        prevMinute = MinuteAngle;
+    }
+
+    private static double NormalizeAngle(double next, double prev)
+    {
+        double delta = ((next - prev) % 360 + 360) % 360;
+        return prev + delta;
+    }
+
+    public void Dispose() { }
+}
