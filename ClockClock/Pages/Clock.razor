@@ -1,5 +1,4 @@
 @using Microsoft.AspNetCore.Components
-@implements IDisposable
 
 <div class="clock" style="
         --hour-angle:@HourAngle;
@@ -30,6 +29,4 @@
         double delta = ((next - prev) % 360 + 360) % 360;
         return prev + delta;
     }
-
-    public void Dispose() { }
 }
